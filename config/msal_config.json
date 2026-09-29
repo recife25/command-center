@@ -1,0 +1,11 @@
+{
+    "client_id": "f3ad4717-d95a-4ded-8e94-9a2a4160cf0d",
+    "authority": "https://login.microsoftonline.com/common",
+    "redirect_uri": "https://login.microsoftonline.com/common/oauth2/nativeclient",
+    "scopes": [
+        "Calendars.ReadWrite",
+        "Mail.ReadWrite",
+        "Mail.Send",
+        "User.Read"
+    ]
+}

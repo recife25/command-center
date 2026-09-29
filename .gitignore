@@ -1,1 +1,72 @@
 # file: .gitignore
+
+# ===========================
+# Python
+# ===========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+*.pickle
+
+# Virtual environments
+venv/
+.env/
+.envrc
+
+# ===========================
+# FastAPI / Streamlit / Web
+# ===========================
+*.db
+*.sqlite3
+instance/
+*.log
+logs/
+*.pid
+
+# ===========================
+# Credentials / Secrets
+# ===========================
+token.json
+*.pem
+*.key
+*.crt
+*.der
+*.p12
+*.pfx
+
+# ===========================
+# OS / Editor junk
+# ===========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# VS Code
+.vscode/
+.history/
+
+# ===========================
+# Python tooling
+# ===========================
+# Pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+# PyInstaller
+*.spec
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ===========================
+# Cache folders
+# ===========================
+.cache/
+*.cache
+

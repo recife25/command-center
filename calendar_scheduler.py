@@ -2,8 +2,7 @@ from task_manager import TaskManager
 from progress_tracker import ProgressTracker
 from datetime import datetime, timedelta
 from outlook_module import OutlookCalendar  # your existing Outlook integration
-
-class CalendarScheduler:
+cclass CalendarScheduler:
     def __init__(self):
         self.tm = TaskManager()
         self.pt = ProgressTracker()

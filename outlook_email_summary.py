@@ -109,7 +109,7 @@ Your Command Center
         metrics = self.pt.calculate_progress()
 
         if metrics["daily_velocity"] == 0:
-            subject = "Consistency Reminder"
+            subject = "Consistency Reminder"out
             body = f"""
 Hello Felipe,
 

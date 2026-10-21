@@ -1,11 +1,11 @@
-from task_manager import TaskManager
-from datetime import datetime
-from outlook_module import OutlookCalendar
+from calendar_sync import CalendarSync
+from outlook_email_summary import OutlookEmailSummary
+
 
 class DailyBriefing:
     def __init__(self):
-        self.tm = TaskManager()
-        self.outlook = OutlookCalendar()
+        self.calendar = CalendarSync()
+        self.email = OutlookEmailSummary()co
 
     def generate_briefing(self):
         tasks = self.tm.list_tasks()

@@ -2,6 +2,7 @@
 
 import requests
 from auth import get_token
+from datetime import date 
 
 GRAPH_BASE = "https://graph.microsoft.com/v1.0"
 
@@ -65,6 +66,26 @@ class OutlookCalendar:
             })
 
         return events
+    
+
+    # ---------------------------------------------------------
+    # GET TODAY'S EVENTS (BAREBONE HELPER)
+    # ---------------------------------------------------------
+    def get_today_events(self):
+        """Return today's events in a simple, clean format."""
+        today = date.today().isoformat()
+        raw_events = self.get_events_by_date(today)
+
+        events = []
+        for e in raw_events:
+            events.append({
+                "subject": e["subject"],
+                "start_time": e["start"],
+                "end_time": e["end"]
+            })
+
+        return events
+
 
     # ---------------------------------------------------------
     # GET EVENT BY ID

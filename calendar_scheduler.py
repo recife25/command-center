@@ -1,91 +1,49 @@
-from task_manager import TaskManager
-from progress_tracker import ProgressTracker
 from datetime import datetime, timedelta
-from outlook_module import OutlookCalendar  # your existing Outlook integration
-cclass CalendarScheduler:
+from outlook_module import OutlookCalendar
+
+class CalendarScheduler:
     def __init__(self):
-        self.tm = TaskManager()
-        self.pt = ProgressTracker()
         self.outlook = OutlookCalendar()
 
     def get_free_time_blocks(self):
-        """Fetch free time from Outlook calendar."""
-        today = datetime.now()
-        tomorrow = today + timedelta(days=1)
+        tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+        events = self.outlook.get_events_by_date(tomorrow)
 
-        events = self.outlook.get_events(tomorrow)
+        # Convert events into time ranges
+        busy = []
+        for e in events:
+            start = datetime.fromisoformat(e["start"])
+            end = datetime.fromisoformat(e["end"])
+            busy.append((start, end))
+
+        # Sort by start time
+        busy.sort(key=lambda x: x[0])
+
+        # Define working hours
+        day_start = datetime.fromisoformat(tomorrow + "T09:00:00")
+        day_end   = datetime.fromisoformat(tomorrow + "T17:00:00")
+
         free_blocks = []
+        current = day_start
 
-        # Build free time blocks between events
-        start_of_day = datetime(tomorrow.year, tomorrow.month, tomorrow.day, 8, 0)
-        end_of_day = datetime(tomorrow.year, tomorrow.month, tomorrow.day, 22, 0)
+        for start, end in busy:
+            if current < start:
+                free_blocks.append((current, start))
+            current = max(current, end)
 
-        current = start_of_day
-
-        for event in events:
-            if event["start"] > current:
-                free_blocks.append((current, event["start"]))
-            current = event["end"]
-
-        if current < end_of_day:
-            free_blocks.append((current, end_of_day))
+        if current < day_end:
+            free_blocks.append((current, day_end))
 
         return free_blocks
 
     def schedule_tasks(self):
-        """Smart scheduling based on progress metrics."""
-        metrics = self.pt.calculate_progress()
-        tasks = self.tm.list_tasks()
-
         free_blocks = self.get_free_time_blocks()
 
-        # Sort tasks by smart priority
-        def smart_priority(task):
-            priority_map = {
-                "study": 1,
-                "lab": 2,
-                "homework": 3,
-                "project": 4,
-                "reading": 5,
-                "misc": 6
-            }
+        if not free_blocks:
+            return "No free time tomorrow."
 
-            base = priority_map.get(task["category"], 99)
+        msg = "Free time blocks tomorrow:\n\n"
+        for start, end in free_blocks:
+            msg += f"- {start.strftime('%I:%M %p')} to {end.strftime('%I:%M %p')}\n"
 
-            # Overdue tasks get boosted
-            overdue_boost = 0
-            if task["estimate"] and task["created_at"]:
-                created = datetime.fromisoformat(task["created_at"])
-                if (datetime.now() - created).days >= 3:
-                    overdue_boost = -2
-
-            # Momentum adjustment
-            momentum_adjust = -1 if metrics["momentum"] < 3 else 0
-
-            return base + overdue_boost + momentum_adjust
-
-        tasks_sorted = sorted(tasks, key=smart_priority)
-
-        # Schedule tasks into free blocks
-        for task in tasks_sorted:
-            needed = task["estimate"]
-            if needed <= 0:
-                continue
-
-            for block_start, block_end in free_blocks:
-                block_hours = (block_end - block_start).total_seconds() / 3600
-
-                if block_hours >= needed:
-                    self.outlook.create_event(
-                        title=f"{task['category'].capitalize()} Block — {task['title']}",
-                        start=block_start,
-                        end=block_start + timedelta(hours=needed),
-                        description=f"Auto‑scheduled by Command Center. Estimate: {needed} hours."
-                    )
-                    break
-
-        return "Smart scheduling complete."
-
-if __name__ == "__main__":
-    cs = CalendarScheduler()
-    print(cs.schedule_tasks())
+        return msg

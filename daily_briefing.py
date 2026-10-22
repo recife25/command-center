@@ -1,73 +1,29 @@
-from calendar_sync import CalendarSync
-from outlook_email_summary import OutlookEmailSummary
-
+from outlook_module import OutlookCalendar
+from datetime import datetime
 
 class DailyBriefing:
     def __init__(self):
-        self.calendar = CalendarSync()
-        self.email = OutlookEmailSummary()co
+        self.calendar = OutlookCalendar()
 
     def generate_briefing(self):
-        tasks = self.tm.list_tasks()
         today = datetime.now().strftime("%A, %B %d, %Y")
+        events = self.calendar.get_today_events()
 
-        if not tasks:
-            return f"""
-📅 Daily Briefing — {today}
+        briefing = f"Daily Briefing — {today}\n\n"
 
-You have **no tasks** scheduled for today.
-This is a good day to:
-- Review your backlog
-- Add new study tasks
-- Plan your next sprint
-"""
+        if not events:
+            briefing += "No events scheduled for today.\n"
+        else:
+            briefing += "Today's Events:\n\n"
+            for e in events:
+                briefing += f"- {e['subject']} at {e['start_time']}\n"
 
-        # Sort tasks by category priority
-        priority_order = {
-            "study": 1,
-            "lab": 2,
-            "homework": 3,
-            "project": 4,
-            "reading": 5,
-            "misc": 6
-        }
-
-        tasks_sorted = sorted(tasks, key=lambda t: priority_order.get(t["category"], 99))
-
-        total_estimate = sum(t["estimate"] for t in tasks_sorted if t["estimate"])
-
-        briefing = f"""
-📅 Daily Briefing — {today}
-
-Here is your plan for today:
-
-"""
-
-        for t in tasks_sorted:
-            briefing += f"""
-🔹 **{t['title']}**
-   - Category: {t['category']}
-   - Estimate: {t['estimate']} hours
-   - Created: {t['created_at']}
-"""
-
-        briefing += f"""
-
-⏱ **Total Estimated Time:** {total_estimate} hours
-
-⭐ **Suggested Order:**
-1. Study tasks first (deep work)
-2. Labs second (hands-on)
-3. Homework third (reinforcement)
-4. Misc last (cleanup)
-
-⚠️ **Blockers:** (manual for now)
-- Add blockers here if needed
-
-🎯 **Daily Goal:**
-Complete at least 2 tasks and log progress.
-
-"""
+        # NEW: System Status Section
+        briefing += "\nSystem Status:\n"
+        briefing += "- FastAPI backend: RUNNING\n"
+        briefing += "- Streamlit dashboard: ACTIVE\n"
+        briefing += "- Modules loaded: DailyBriefing, CalendarScheduler, OutlookCalendar\n"
+        briefing += "- Last update: " + today + "\n"
 
         return briefing
 

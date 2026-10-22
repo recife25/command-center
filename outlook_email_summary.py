@@ -1,7 +1,7 @@
 from task_manager import TaskManager
 from progress_tracker import ProgressTracker
 from weekly_review import WeeklyReview
-from daily_briefing import DailyBriefing
+#from daily_briefing import DailyBriefing
 from daily_review import DailyReview
 from outlook_module import OutlookEmail  # your Outlook email integration
 from datetime import datetime
@@ -11,7 +11,7 @@ class OutlookEmailSummary:
         self.tm = TaskManager()
         self.pt = ProgressTracker()
         self.dr = DailyReview()
-        self.db = DailyBriefing()
+        #self.db = DailyBriefing()
         self.wr = WeeklyReview()
         self.outlook = OutlookEmail()
 
@@ -109,7 +109,7 @@ Your Command Center
         metrics = self.pt.calculate_progress()
 
         if metrics["daily_velocity"] == 0:
-            subject = "Consistency Reminder"out
+            subject = "Consistency Reminder"
             body = f"""
 Hello Felipe,
 

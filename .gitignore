@@ -71,3 +71,4 @@ build/
 .cache/
 *.cache
 
+job_applications.csv
